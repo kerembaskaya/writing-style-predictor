@@ -1,14 +1,15 @@
 import collections
 import csv
+from dataclasses import dataclass
 from pathlib import Path
-
+from typing import Dict
 
 catalog_file_path = str(Path(__file__).parents[1]) + "/resources/" + "pg_catalog.csv"
 
-author_list = (
+selected_authors = {
     "Jefferson, Thomas, 1743-1826",
     "Stevenson, Robert Louis, 1850-1894",
-)  # sirasiyla 1, 2, sonuc cikmasi gerekiyor.
+}  # sirasiyla 1, 2, sonuc cikmasi gerekiyor.
 
 
 def read_csv(filepath=catalog_file_path):
@@ -19,33 +20,50 @@ def read_csv(filepath=catalog_file_path):
         yield list(map(lambda s: s.replace("\n", " ").strip(), line))
 
 
+@dataclass
+class Book:
+    book_id: str
+    title: str
+    language: str
+    author: str
+
+
 def parse_data_row(row: list):
 
-    return (
+    return Book(
         row[0],  # book number
         row[3],  # title
         row[4],  # language
-        row[5],  # authors
+        row[5],  # author
     )
 
 
-def list_author_data(row, list_of_author=author_list, language="en"):
-    authors_set = set(
-        list_of_author
-    )  # Q burada tuple'i set'e cevirdim hizlansin diye yoksa gereksiz bir hamle mi?
-    book_number, book_title, book_lang, authors = row[:]
-    if authors in authors_set and book_lang == "en":
-        return row
+def is_selected_author(book: Book, language="en"):
+    if book.author in selected_authors and book.language == language:
+        return True
+    return False
 
 
-def create_catalog(filepath=catalog_file_path):
-    author_book_catalog = collections.defaultdict(dict)
+def create_catalog(filepath: str = catalog_file_path) -> Dict:
+    """
+
+    Note:
+        If there are different versions of the same book in the source catalog, it takes only the last version
+    since it saves by title (the last one overwrites the previous version).
+
+
+    Args:
+        filepath (str): The first argument. The filepath of the source catalog of the related database.
+
+    Returns:
+
+        Return a dictionary contains authors' dictionaries that contain book title and book id pairs.
+
+    """
+    author_book_catalog = collections.defaultdict(list)
     for row in read_csv(filepath):
-        parsed_row = parse_data_row(row)
-        if list_author_data(parsed_row) is not None:
-            author_book_catalog[row[3]][row[1]] = row[0]
+        book = parse_data_row(row)
+        if is_selected_author(book):
+            author_book_catalog[book.author].append(book)
 
     return author_book_catalog
-
-
-create_catalog()
