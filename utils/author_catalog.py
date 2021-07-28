@@ -1,4 +1,5 @@
 import collections
+import csv
 from pathlib import Path
 
 
@@ -11,35 +12,21 @@ author_list = (
 
 
 def read_csv(filepath=catalog_file_path):
-    with open(filepath) as f:
-        next(f)
-        full_line = ""
-        while True:
-            try:
-                line = next(f).strip()
-                try:
-                    int(line.split(",", 1)[0])
-                    if full_line != "":
-                        yield full_line
-                    full_line = ""
-                except ValueError:
-                    pass
-                full_line = f"{full_line} {line}"
-            except StopIteration:
-                if full_line != "":
-                    yield full_line
-                    break
+    lines = csv.reader(open(filepath), delimiter=",")
+    next(lines)  # skip the header.
+    for line in lines:
+        # data has some random new lines. Replace them with white space, then strip it.
+        yield list(map(lambda s: s.replace("\n", " ").strip(), line))
 
 
-def parse_data_row(row):
-    row_parsed = row.split(",")
+def parse_data_row(row: list):
 
     return (
-        row_parsed[0],
-        row_parsed[3],
-        row_parsed[4],
-        row_parsed[5],
-    )  # respectively: book number, title, language, authors
+        row[0],  # book number
+        row[3],  # title
+        row[4],  # language
+        row[5],  # authors
+    )
 
 
 def list_author_data(row, list_of_author=author_list, language="en"):
@@ -59,3 +46,6 @@ def create_catalog(filepath=catalog_file_path):
             author_book_catalog[row[3]][row[1]] = row[0]
 
     return author_book_catalog
+
+
+create_catalog()
