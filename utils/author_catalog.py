@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict
 
-catalog_file_path = str(Path(__file__).parents[1]) + "/resources/" + "pg_catalog.csv"
+catalog_file_path = Path(__file__).parents[1] / "resources" / "pg_catalog.csv"
 
 selected_authors = {
     "Jefferson, Thomas, 1743-1826",
     "Stevenson, Robert Louis, 1850-1894",
-}  # sirasiyla 1, 2, sonuc cikmasi gerekiyor.
+}  # respectively it should returns 1, 2.
 
 
 def read_csv(filepath=catalog_file_path):

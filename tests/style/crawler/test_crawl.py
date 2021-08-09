@@ -1,4 +1,3 @@
-from os import path
 from pathlib import Path
 from unittest import mock
 
@@ -6,7 +5,7 @@ import pytest
 
 from style.crawler.crawl import GutenbergWrangler
 
-test_data_filename = path.join(Path(__file__).parents[3], "resources", "test_page.html")
+test_data_filename = Path(__file__).parents[3] / "resources" / "test_page.html"
 
 
 @pytest.fixture(scope="function")

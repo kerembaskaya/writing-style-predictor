@@ -6,8 +6,8 @@ from typing import List
 from typing import Set
 
 file_name = "world-lang.json"
-file_path = str(Path(__file__).parents[1]) + "/resources/"
-file_path_and_name = str(Path(__file__).parents[1]) + "/resources/" + file_name
+file_path = Path(__file__).parents[1] / "/resources/"
+file_path_and_name = Path(__file__).parents[1] / "/resources/" / file_name
 
 LANG_RAW: str = (
     "Romani Romanian Russian Rwanda Samoan Sanskrit Serbian Shona Sindhi Sinhala Slovak Slovene Somali "

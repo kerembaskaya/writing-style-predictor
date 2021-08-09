@@ -12,10 +12,8 @@ from utils.author_catalog import create_catalog
 from utils.utils import sanitize_author_name
 
 gutenberg_base_url = "http://aleph.gutenberg.org/"
-file_path_book_db = path.join(Path(__file__).parents[2], "book_db")
-catalog_file_path = path.join(
-    Path(__file__).parents[1], "/resources/", "pg_catalog.csv"
-)
+file_path_book_db = Path(__file__).parents[2] / "book_db"
+catalog_file_path = Path(__file__).parents[1] / "resources" / "pg_catalog.csv"
 
 
 class DataWrangler:
@@ -95,8 +93,8 @@ class GutenbergWrangler(DataWrangler, ABC):
         """
         author_name = sanitize_author_name(author_name)
         book_name_full = f"{book_id}.txt"
-        author_dir_path = path.join(file_path_book_db, f"{author_name}")
-        book_path = path.join(file_path_book_db, author_name, book_name_full)
+        author_dir_path = file_path_book_db / author_name
+        book_path = file_path_book_db / author_name / book_name_full
 
         if not path.isdir(author_dir_path):
             mkdir(author_dir_path)
