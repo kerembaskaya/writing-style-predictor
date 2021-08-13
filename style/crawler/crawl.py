@@ -2,18 +2,15 @@ from abc import ABC
 from abc import abstractmethod
 from os import mkdir
 from os import path
-from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 from urlpath import URL
 
+from style.constants import FILE_PATH_BOOK_DB
+from style.constants import GUTENBERG_BASE_URL
 from utils.author_catalog import create_catalog
 from utils.utils import sanitize_author_name
-
-gutenberg_base_url = "http://aleph.gutenberg.org/"
-file_path_book_db = Path(__file__).parents[2] / "book_db"
-catalog_file_path = Path(__file__).parents[1] / "resources" / "pg_catalog.csv"
 
 
 class DataWrangler:
@@ -27,7 +24,7 @@ class DataWrangler:
 
 
 class GutenbergWrangler(DataWrangler, ABC):
-    def __init__(self, baseurl=gutenberg_base_url):
+    def __init__(self, baseurl=GUTENBERG_BASE_URL):
         super().__init__(baseurl)
 
     def transform_book_id_to_url(self, book_id: str) -> str:
@@ -93,8 +90,8 @@ class GutenbergWrangler(DataWrangler, ABC):
         """
         author_name = sanitize_author_name(author_name)
         book_name_full = f"{book_id}.txt"
-        author_dir_path = file_path_book_db / author_name
-        book_path = file_path_book_db / author_name / book_name_full
+        author_dir_path = FILE_PATH_BOOK_DB / author_name
+        book_path = FILE_PATH_BOOK_DB / author_name / book_name_full
 
         if not path.isdir(author_dir_path):
             mkdir(author_dir_path)
@@ -115,8 +112,8 @@ class GutenbergWrangler(DataWrangler, ABC):
         Returns:
             It returns None.
         """
-        if not path.isdir(file_path_book_db):
-            mkdir(file_path_book_db)
+        if not path.isdir(FILE_PATH_BOOK_DB):
+            mkdir(FILE_PATH_BOOK_DB)
 
         authors_catalog = create_catalog()
 
@@ -126,3 +123,8 @@ class GutenbergWrangler(DataWrangler, ABC):
                 book_author = book.author
                 book_text = self.get_book(book_id)
                 self._save_books_to_disk(book_text, book_author, book_id)
+
+
+# if __name__ == "__main__":
+#     gutenberg = GutenbergWrangler()
+#     gutenberg.crawl()

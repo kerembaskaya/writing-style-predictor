@@ -1,11 +1,9 @@
-from pathlib import Path
 from unittest import mock
 
 import pytest
 
+from style.constants import TEST_DATA_FILENAME
 from style.crawler.crawl import GutenbergWrangler
-
-test_data_filename = Path(__file__).parents[3] / "resources" / "test_page.html"
 
 
 @pytest.fixture(scope="function")
@@ -17,7 +15,7 @@ def gutenberg_wrangler():
 def html_test_file():
     import codecs
 
-    f = codecs.open(test_data_filename, "r").read()
+    f = codecs.open(TEST_DATA_FILENAME, "r").read()
     return f
 
 

@@ -1,18 +1,20 @@
 import collections
 import csv
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Dict
 
-catalog_file_path = Path(__file__).parents[1] / "resources" / "pg_catalog.csv"
+from style.constants import CATALOG_FILE_PATH
 
 selected_authors = {
     "Jefferson, Thomas, 1743-1826",
     "Stevenson, Robert Louis, 1850-1894",
+    "Lincoln, Abraham, 1809-1865",
+    "Dickens, Charles, 1812-1870",
+    "Douglass, Frederick, 1818-1895",
 }  # respectively it should returns 1, 2.
 
 
-def read_csv(filepath=catalog_file_path):
+def read_csv(filepath=CATALOG_FILE_PATH):
     lines = csv.reader(open(filepath), delimiter=",")
     next(lines)  # skip the header.
     for line in lines:
@@ -44,7 +46,7 @@ def is_selected_author(book: Book, language="en"):
     return False
 
 
-def create_catalog(filepath: str = catalog_file_path) -> Dict:
+def create_catalog(filepath: str = CATALOG_FILE_PATH) -> Dict:
     """
 
     Note:

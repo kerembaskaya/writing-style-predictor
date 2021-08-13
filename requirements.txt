@@ -1,5 +1,6 @@
-beautifulsoup4
+beautifulsoup4==4.9.3
 requests~=2.26.0
 setuptools~=57.0.0
-sklearn==0.24.2
-urlpath
+scikit_learn==0.24.2
+urlpath==1.1.7
+dill==0.3.4
