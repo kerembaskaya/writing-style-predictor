@@ -62,10 +62,11 @@ class Dataset:
     def __len__(self):
         return len(self._data)
 
-    def shuffle(self):
+    def shuffle(self, seed: int = 123):
         data = np.array(self._data)
         target = np.array(self._target)
         indices = list(range(0, len(self)))
+        random.seed(seed)
         random.shuffle(indices)
         self._data = []
         self._target = []
@@ -75,6 +76,6 @@ class Dataset:
 
     def __getitem__(self, s):
         if isinstance(s, slice):
-            pass
-        data = Dataset([self.data[s]], [self.target[s]])
-        return data
+            return Dataset(self.data[s], self.target[s])
+
+        return Dataset([self.data[s]], [self.target[s]])
