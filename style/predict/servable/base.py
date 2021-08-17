@@ -1,6 +1,10 @@
 from abc import ABC
 from abc import abstractmethod
 
+import dill
+
+from style.constants import MODEL_EXPORT_PATH
+
 
 class BaseServable(ABC):
     SCHEMA_SLUG = "schema.json"
@@ -29,11 +33,12 @@ class SklearnBasedClassifierServable(BaseServable):
         self.model = model
 
     def export(self, path):
-        pass
+        with open(path, "wb") as f:
+            dill.dump(self.model, f)
 
     def run_inference(self, texts):
         pass
 
     @classmethod
     def load(cls, path):
-        pass
+        dill.load(path)

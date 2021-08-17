@@ -15,54 +15,75 @@ from style.constants import FILE_PATH_BOOK_DB
 from style.constants import MODEL_EXPORT_PATH
 from style.dataset.reader import Dataset
 from style.dataset.reader import DatasetReader
-from style.predict.servable.base import BaseServable
+from style.predict.servable.base import SklearnBasedClassifierServable
 
 
 class TextNormalizer:
     pass
 
 
-def train_sklearn_classification_model(
+def split_dataset(
     dataset: Dataset,
-    export_path: PosixPath,
-    pipeline: Pipeline,
-    grid_search_params: dict,
     test_percentage: float = 0.2,
     random_state: int = 42,
-) -> BaseServable:
-    """This method trains multiple models via GridSearchCV and it creates a servable
-    from the best model.
-
-    See https://scikit-learn.org/stable/tutorial/statistical_inference/putting_together.html for more details.
-    """
-
-    servable = None
+):
     docs_train, docs_test, y_train, y_test = train_test_split(
         dataset.data,
         dataset.target,
         test_size=test_percentage,
         random_state=random_state,
     )
+    return docs_train, docs_test, y_train, y_test, dataset.target
+
+
+def train_sklearn_classification_model(
+    docs_train,
+    docs_test,
+    y_train,
+    y_test,
+    dataset_target,
+    pipeline: Pipeline,
+    grid_search_params: dict,
+):
+    """This method trains multiple models via GridSearchCV and it creates a servable
+    from the best model.
+
+    See https://scikit-learn.org/stable/tutorial/statistical_inference/putting_together.html for more details.
+
+
+    """
 
     grid_search = GridSearchCV(pipeline, grid_search_params, n_jobs=-1, cv=2)
     grid_search.fit(docs_train, y_train)
     y_predicted = grid_search.predict(docs_test)
 
-    report = metrics.classification_report(
-        y_test, y_predicted, target_names=set(dataset.target)
+    report_ = metrics.classification_report(
+        y_test, y_predicted, target_names=set(dataset_target)
     )
     confusion_matrix = metrics.confusion_matrix(y_test, y_predicted)
 
-    with open(export_path / "report.txt", "w") as f:
-        f.write(report)
+    return grid_search.best_estimator_, report_, confusion_matrix
 
-    with open(export_path / "cm.txt", "w") as f:
-        f.write(str(confusion_matrix))
 
-    # When the model is ready, initiate it and return at the end.
+# Q: burayi a yapmayinca eklemiyor. w ile sadece ustunu yazip eziyor.
+
+
+def report(report_, confusion_matrix, export_path: PosixPath):
+    with open(export_path / "report.txt", "a") as f:
+        f.write(report_)
+    with open(export_path / "cm.txt", "a") as f:
+        f.write(f"{str(confusion_matrix)}\n")
+
+
+def export(model, export_path):
+    """
+        # When the model is ready, initiate it and return at the end.
     # from style.predict.servable.base import SklearnBasedClassifierServable
     # servable = SklearnBasedClassifierServable(model=model).export(export_path)
-    return servable
+    Returns:
+
+    """
+    SklearnBasedClassifierServable(model=model).export(export_path)
 
 
 def create_pipeline(clf_name, estimator, normalize=False, reduction=False):
@@ -87,21 +108,27 @@ def run():
         ("clf_sgd", SGDClassifier),
     ]
 
-    parameters = [{"vectorize__ngram_range": [(1, 1), (1, 2)]}]
+    parameters = [
+        {"vectorize__ngram_range": [(1, 1), (1, 2)]},
+        {"vectorize__ngram_range": [(1, 1), (1, 2)]},
+        {"vectorize__ngram_range": [(1, 1), (1, 2)]},
+        {"vectorize__ngram_range": [(1, 1), (1, 2)]},
+    ]
 
     dataset = DatasetReader.load_files(FILE_PATH_BOOK_DB)
     print(len(dataset))
     dataset.shuffle()
     small_dataset = dataset[:200]
+    docs_train, docs_test, y_train, y_test, dataset_target = split_dataset(
+        small_dataset
+    )
 
-    models = []
-    for name, form in classifiers:
-        models.append(create_pipeline(name, form()))
-
-    for model in models:
-        train_sklearn_classification_model(
-            small_dataset, MODEL_EXPORT_PATH, model, parameters
+    for (name, clf), params in zip(classifiers, parameters):
+        pipeline = create_pipeline(name, clf())
+        model, report_, cm = train_sklearn_classification_model(
+            docs_train, docs_test, y_train, y_test, dataset_target, pipeline, params
         )
+        report(report_, cm, MODEL_EXPORT_PATH)
 
 
 if __name__ == "__main__":
