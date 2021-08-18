@@ -1,5 +1,3 @@
-import pytest
-
 from utils.utils import sanitize_author_name
 
 

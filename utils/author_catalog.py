@@ -4,14 +4,8 @@ from dataclasses import dataclass
 from typing import Dict
 
 from style.constants import CATALOG_FILE_PATH
-
-selected_authors = {
-    "Jefferson, Thomas, 1743-1826",
-    "Stevenson, Robert Louis, 1850-1894",
-    "Lincoln, Abraham, 1809-1865",
-    "Dickens, Charles, 1812-1870",
-    "Douglass, Frederick, 1818-1895",
-}  # respectively it should returns 1, 2.
+from style.constants import LOG_FILE_PATH
+from style.constants import SELECTED_AUTHORS
 
 
 def read_csv(filepath=CATALOG_FILE_PATH):
@@ -31,7 +25,6 @@ class Book:
 
 
 def parse_data_row(row: list):
-
     return Book(
         row[0],  # book number
         row[3],  # title
@@ -40,13 +33,31 @@ def parse_data_row(row: list):
     )
 
 
-def is_selected_author(book: Book, language="en"):
+def is_selected_author(book: Book, selected_authors=SELECTED_AUTHORS, language="en"):
+    """
+    Note:
+        'Translator' control should check only for the second element of the strings; otherwise, there is a
+    possibility that it takes the books to have multiple authors, which we are not interested in.
+
+    book.author.split(';')[1] only controls second element for
+    Args:
+        book:
+        selected_authors:
+        language:
+
+    Returns:
+
+    """
+    _book_author = book.author
+    if ";" in book.author and "Translator" in book.author.split(";")[1]:
+        book.author = book.author.split(";")[0]
     if book.author in selected_authors and book.language == language:
+        book.author = _book_author
         return True
     return False
 
 
-def create_catalog(filepath: str = CATALOG_FILE_PATH) -> Dict:
+def create_catalog(filepath: str = CATALOG_FILE_PATH, log=True) -> Dict:
     """
 
     Note:
@@ -56,7 +67,7 @@ def create_catalog(filepath: str = CATALOG_FILE_PATH) -> Dict:
 
     Args:
         filepath (str): The first argument. The filepath of the source catalog of the related database.
-
+        log (bool):
     Returns:
 
         Return a dictionary contains authors' dictionaries that contain book title and book id pairs.
@@ -66,6 +77,29 @@ def create_catalog(filepath: str = CATALOG_FILE_PATH) -> Dict:
     for row in read_csv(filepath):
         book = parse_data_row(row)
         if is_selected_author(book):
+            if log:
+                create_log(book)
+            if ";" in book.author:
+                book.author = book.author.split(";")[0]
+                # if author_book_catalog[book.author]:
+                #     for entry in author_book_catalog[book.author]:
+                #         if not book.title == entry.title:
+                #             author_book_catalog[book.author].append(book)
             author_book_catalog[book.author].append(book)
 
     return author_book_catalog
+
+
+def create_log(book: Book, log_path=LOG_FILE_PATH):
+    """
+    It takes a Book object and log file path. It saves information in the book object to the log file.
+    Args:
+        book (Book):
+        log_path (str): The third argument shows where the log file will save.
+
+    Returns:
+        None
+    """
+    with open(log_path, "a") as f:
+        f.write(f"{book.book_id} {book.author}  {book.title}")
+        f.write("\n")

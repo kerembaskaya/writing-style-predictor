@@ -125,6 +125,6 @@ class GutenbergWrangler(DataWrangler, ABC):
                 self._save_books_to_disk(book_text, book_author, book_id)
 
 
-# if __name__ == "__main__":
-#     gutenberg = GutenbergWrangler()
-#     gutenberg.crawl()
+if __name__ == "__main__":
+    gutenberg = GutenbergWrangler()
+    gutenberg.crawl()
