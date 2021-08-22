@@ -18,13 +18,8 @@ class DatasetReader:
                 author_8_folder/
                     book_40.txt
                   book_55.txt
-
-        TODO:
-            - Verilenin dosya mi file mi dosya olup olmadigini anlayabilmesi lazim.
-            - Textleri art arda koyup listelemedi lazim
-            - labellari tutmasi lazim
-
         Args:
+            n:
             container_path:
 
         Returns:

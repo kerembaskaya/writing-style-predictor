@@ -11,7 +11,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-from style.constants import FILE_PATH_BOOK_DB
+from style.constants import FILE_PATH_BOOK_DS
 from style.constants import MODEL_EXPORT_PATH
 from style.dataset.reader import Dataset
 from style.dataset.reader import DatasetReader
@@ -44,6 +44,7 @@ def train_sklearn_classification_model(
     dataset_target,
     pipeline: Pipeline,
     grid_search_params: dict,
+    cv: int = 5,
 ):
     """This method trains multiple models via GridSearchCV and it creates a servable
     from the best model.
@@ -53,7 +54,7 @@ def train_sklearn_classification_model(
 
     """
 
-    grid_search = GridSearchCV(pipeline, grid_search_params, n_jobs=-1, cv=2)
+    grid_search = GridSearchCV(pipeline, grid_search_params, n_jobs=-1, cv=cv)
     grid_search.fit(docs_train, y_train)
     y_predicted = grid_search.predict(docs_test)
 
@@ -71,8 +72,10 @@ def train_sklearn_classification_model(
 def report(report_, confusion_matrix, export_path: PosixPath):
     with open(export_path / "report.txt", "a") as f:
         f.write(report_)
+        print(f"The report is saved successfully, under {export_path}")
     with open(export_path / "cm.txt", "a") as f:
         f.write(f"{str(confusion_matrix)}\n")
+        print(f"The confusion matrix is saved successfully, under {export_path}")
 
 
 def export(model, export_path):
@@ -84,6 +87,7 @@ def export(model, export_path):
 
     """
     SklearnBasedClassifierServable(model=model).export(export_path)
+    print(f"The best model is written to {export_path}")
 
 
 def create_pipeline(clf_name, estimator, normalize=False, reduction=False):
@@ -115,7 +119,7 @@ def run():
         {"vectorize__ngram_range": [(1, 1), (1, 2)]},
     ]
 
-    dataset = DatasetReader.load_files(FILE_PATH_BOOK_DB)
+    dataset = DatasetReader.load_files(FILE_PATH_BOOK_DS)
     print(len(dataset))
     dataset.shuffle()
     small_dataset = dataset[:200]
@@ -126,7 +130,14 @@ def run():
     for (name, clf), params in zip(classifiers, parameters):
         pipeline = create_pipeline(name, clf())
         model, report_, cm = train_sklearn_classification_model(
-            docs_train, docs_test, y_train, y_test, dataset_target, pipeline, params
+            docs_train,
+            docs_test,
+            y_train,
+            y_test,
+            dataset_target,
+            pipeline,
+            params,
+            cv=2,
         )
         report(report_, cm, MODEL_EXPORT_PATH)
 

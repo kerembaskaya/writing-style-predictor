@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from urlpath import URL
 
-from style.constants import FILE_PATH_BOOK_DB
+from style.constants import FILE_PATH_BOOK_DS
 from style.constants import GUTENBERG_BASE_URL
 from utils.author_catalog import create_catalog
 from utils.utils import sanitize_author_name
@@ -90,8 +90,8 @@ class GutenbergWrangler(DataWrangler, ABC):
         """
         author_name = sanitize_author_name(author_name)
         book_name_full = f"{book_id}.txt"
-        author_dir_path = FILE_PATH_BOOK_DB / author_name
-        book_path = FILE_PATH_BOOK_DB / author_name / book_name_full
+        author_dir_path = FILE_PATH_BOOK_DS / author_name
+        book_path = FILE_PATH_BOOK_DS / author_name / book_name_full
 
         if not path.isdir(author_dir_path):
             mkdir(author_dir_path)
@@ -112,8 +112,8 @@ class GutenbergWrangler(DataWrangler, ABC):
         Returns:
             It returns None.
         """
-        if not path.isdir(FILE_PATH_BOOK_DB):
-            mkdir(FILE_PATH_BOOK_DB)
+        if not path.isdir(FILE_PATH_BOOK_DS):
+            mkdir(FILE_PATH_BOOK_DS)
 
         authors_catalog = create_catalog()
 

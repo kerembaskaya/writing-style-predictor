@@ -41,4 +41,4 @@ class SklearnBasedClassifierServable(BaseServable):
 
     @classmethod
     def load(cls, path):
-        dill.load(path)
+        return cls(model=dill.load(path))

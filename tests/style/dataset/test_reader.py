@@ -1,12 +1,12 @@
 import pytest
 
-from style.constants import FILE_PATH_MOCK_DB
+from style.constants import FILE_PATH_MOCK_DS
 from style.dataset.reader import DatasetReader
 
 
 @pytest.fixture
 def dataset():
-    return DatasetReader.load_files(FILE_PATH_MOCK_DB)
+    return DatasetReader.load_files(FILE_PATH_MOCK_DS)
 
 
 class TestDatasetReader:

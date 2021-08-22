@@ -6,7 +6,6 @@ from typing import Set
 
 from style.constants import WORLD_LANG_FILENAME
 from style.constants import WORLD_LANG_PATH
-from style.constants import WORLD_LANG_PATH_AND_NAME
 
 
 LANG_RAW: str = (
@@ -85,23 +84,28 @@ def separate_and_add_alternative_lang_names(languages: List, sep: str = "/") -> 
     return lang_set
 
 
-def save_languages_to_json(languages: Set, output_file_name: str = WORLD_LANG_FILENAME):
+def save_languages_to_json(
+    languages: Set,
+    output_directory: str = WORLD_LANG_PATH,
+    filename: str = WORLD_LANG_FILENAME,
+):
     """
     Save a set file and write it as json file write the file in the resource folder under the project file.
       If there is no such directory, the function creates the directory by itself.
       Returns None.
       Args:
+          filename: filename (e.g., "world-lang.json")
           languages (set): The first argument.
-          output_file_name (str):  The second argument. Default to file_name variable.
+          output_directory (str):  The second argument. Default to WORLD_LANG_PATH variable.
 
       Returns:
           None.
     """
 
-    if not path.isdir(WORLD_LANG_PATH):
-        mkdir(WORLD_LANG_PATH)
+    if not path.isdir(output_directory):
+        mkdir(output_directory)
     json_str = json.dumps(list(languages))
-    with open(WORLD_LANG_PATH_AND_NAME, "w") as f:
+    with open(f"{output_directory} / {filename}", "w") as f:
         f.write(json_str)
 
 
@@ -117,12 +121,12 @@ def get_languages(filename: str = WORLD_LANG_FILENAME) -> Set:
 
     """
 
-    if not path.isfile(WORLD_LANG_PATH_AND_NAME):
+    if not path.isfile(filename):
         lang = proper_lang_list()
         lang_clean = separate_and_add_alternative_lang_names(lang)
         save_languages_to_json(lang_clean)
 
-    with open(WORLD_LANG_PATH_AND_NAME, "r") as f:
+    with open(filename, "r") as f:
         json_obj = json.load(f)
 
     return set(json_obj)

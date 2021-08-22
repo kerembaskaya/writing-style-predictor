@@ -57,7 +57,7 @@ def is_selected_author(book: Book, selected_authors=SELECTED_AUTHORS, language="
     return False
 
 
-def create_catalog(filepath: str = CATALOG_FILE_PATH, log=True) -> Dict:
+def create_catalog(filepath: str = CATALOG_FILE_PATH, enable_logging=True) -> Dict:
     """
 
     Note:
@@ -67,7 +67,7 @@ def create_catalog(filepath: str = CATALOG_FILE_PATH, log=True) -> Dict:
 
     Args:
         filepath (str): The first argument. The filepath of the source catalog of the related database.
-        log (bool):
+        enable_logging (bool): It takes boolean. If it is True (Default), the function will create a log file.
     Returns:
 
         Return a dictionary contains authors' dictionaries that contain book title and book id pairs.
@@ -77,29 +77,27 @@ def create_catalog(filepath: str = CATALOG_FILE_PATH, log=True) -> Dict:
     for row in read_csv(filepath):
         book = parse_data_row(row)
         if is_selected_author(book):
-            if log:
-                create_log(book)
+            if enable_logging:
+                create_control_file(book)
             if ";" in book.author:
                 book.author = book.author.split(";")[0]
-                # if author_book_catalog[book.author]:
-                #     for entry in author_book_catalog[book.author]:
-                #         if not book.title == entry.title:
-                #             author_book_catalog[book.author].append(book)
             author_book_catalog[book.author].append(book)
 
     return author_book_catalog
 
 
-def create_log(book: Book, log_path=LOG_FILE_PATH):
+def create_control_file(book: Book, filepath: str = LOG_FILE_PATH):
     """
-    It takes a Book object and log file path. It saves information in the book object to the log file.
+    It records the selected book entries taken from Gutenberg's Catalog. It saves the entries as how
+    they were in the Gutenberg catalog.
+
     Args:
         book (Book):
-        log_path (str): The third argument shows where the log file will save.
+        filepath (str): The argument shows where the file will save.
 
     Returns:
         None
     """
-    with open(log_path, "a") as f:
+    with open(filepath, "a") as f:
         f.write(f"{book.book_id} {book.author}  {book.title}")
         f.write("\n")
