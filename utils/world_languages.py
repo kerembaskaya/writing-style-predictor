@@ -1,13 +1,12 @@
 import json
 from os import mkdir
 from os import path
-from pathlib import Path
 from typing import List
 from typing import Set
 
-file_name = "world-lang.json"
-file_path = Path(__file__).parents[1] / "/resources/"
-file_path_and_name = Path(__file__).parents[1] / "/resources/" / file_name
+from style.constants import WORLD_LANG_FILENAME
+from style.constants import WORLD_LANG_PATH
+
 
 LANG_RAW: str = (
     "Romani Romanian Russian Rwanda Samoan Sanskrit Serbian Shona Sindhi Sinhala Slovak Slovene Somali "
@@ -85,27 +84,32 @@ def separate_and_add_alternative_lang_names(languages: List, sep: str = "/") -> 
     return lang_set
 
 
-def save_languages_to_json(languages: Set, output_file_name: str = file_name):
+def save_languages_to_json(
+    languages: Set,
+    output_directory: str = WORLD_LANG_PATH,
+    filename: str = WORLD_LANG_FILENAME,
+):
     """
     Save a set file and write it as json file write the file in the resource folder under the project file.
       If there is no such directory, the function creates the directory by itself.
       Returns None.
       Args:
+          filename: filename (e.g., "world-lang.json")
           languages (set): The first argument.
-          output_file_name (str):  The second argument. Default to file_name variable.
+          output_directory (str):  The second argument. Default to WORLD_LANG_PATH variable.
 
       Returns:
           None.
     """
 
-    if not path.isdir(file_path):
-        mkdir(file_path)
+    if not path.isdir(output_directory):
+        mkdir(output_directory)
     json_str = json.dumps(list(languages))
-    with open(file_path_and_name, "w") as f:
+    with open(f"{output_directory} / {filename}", "w") as f:
         f.write(json_str)
 
 
-def get_languages(filename: str = file_name) -> Set:
+def get_languages(filename: str = WORLD_LANG_FILENAME) -> Set:
     """
     It takes name of the world languages file as an argument returns a set of world languages as set object.
 
@@ -117,12 +121,12 @@ def get_languages(filename: str = file_name) -> Set:
 
     """
 
-    if not path.isfile(file_path_and_name):
+    if not path.isfile(filename):
         lang = proper_lang_list()
         lang_clean = separate_and_add_alternative_lang_names(lang)
         save_languages_to_json(lang_clean)
 
-    with open(file_path_and_name, "r") as f:
+    with open(filename, "r") as f:
         json_obj = json.load(f)
 
     return set(json_obj)

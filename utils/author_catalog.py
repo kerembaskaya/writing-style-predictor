@@ -1,18 +1,14 @@
 import collections
 import csv
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Dict
 
-catalog_file_path = Path(__file__).parents[1] / "resources" / "pg_catalog.csv"
-
-selected_authors = {
-    "Jefferson, Thomas, 1743-1826",
-    "Stevenson, Robert Louis, 1850-1894",
-}  # respectively it should returns 1, 2.
+from style.constants import CATALOG_FILE_PATH
+from style.constants import LOG_FILE_PATH
+from style.constants import SELECTED_AUTHORS
 
 
-def read_csv(filepath=catalog_file_path):
+def read_csv(filepath=CATALOG_FILE_PATH):
     lines = csv.reader(open(filepath), delimiter=",")
     next(lines)  # skip the header.
     for line in lines:
@@ -29,7 +25,6 @@ class Book:
 
 
 def parse_data_row(row: list):
-
     return Book(
         row[0],  # book number
         row[3],  # title
@@ -38,13 +33,31 @@ def parse_data_row(row: list):
     )
 
 
-def is_selected_author(book: Book, language="en"):
+def is_selected_author(book: Book, selected_authors=SELECTED_AUTHORS, language="en"):
+    """
+    Note:
+        'Translator' control should check only for the second element of the strings; otherwise, there is a
+    possibility that it takes the books to have multiple authors, which we are not interested in.
+
+    book.author.split(';')[1] only controls second element for
+    Args:
+        book:
+        selected_authors:
+        language:
+
+    Returns:
+
+    """
+    _book_author = book.author
+    if ";" in book.author and "Translator" in book.author.split(";")[1]:
+        book.author = book.author.split(";")[0]
     if book.author in selected_authors and book.language == language:
+        book.author = _book_author
         return True
     return False
 
 
-def create_catalog(filepath: str = catalog_file_path) -> Dict:
+def create_catalog(filepath: str = CATALOG_FILE_PATH, enable_logging=True) -> Dict:
     """
 
     Note:
@@ -54,7 +67,7 @@ def create_catalog(filepath: str = catalog_file_path) -> Dict:
 
     Args:
         filepath (str): The first argument. The filepath of the source catalog of the related database.
-
+        enable_logging (bool): It takes boolean. If it is True (Default), the function will create a log file.
     Returns:
 
         Return a dictionary contains authors' dictionaries that contain book title and book id pairs.
@@ -64,6 +77,27 @@ def create_catalog(filepath: str = catalog_file_path) -> Dict:
     for row in read_csv(filepath):
         book = parse_data_row(row)
         if is_selected_author(book):
+            if enable_logging:
+                create_control_file(book)
+            if ";" in book.author:
+                book.author = book.author.split(";")[0]
             author_book_catalog[book.author].append(book)
 
     return author_book_catalog
+
+
+def create_control_file(book: Book, filepath: str = LOG_FILE_PATH):
+    """
+    It records the selected book entries taken from Gutenberg's Catalog. It saves the entries as how
+    they were in the Gutenberg catalog.
+
+    Args:
+        book (Book):
+        filepath (str): The argument shows where the file will save.
+
+    Returns:
+        None
+    """
+    with open(filepath, "a") as f:
+        f.write(f"{book.book_id} {book.author}  {book.title}")
+        f.write("\n")
