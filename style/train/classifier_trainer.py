@@ -1,3 +1,5 @@
+from os import mkdir
+from os import path
 from pathlib import PosixPath
 
 from sklearn import metrics
@@ -87,7 +89,6 @@ def export(model, export_path):
 
     """
     SklearnBasedClassifierServable(model=model).export(export_path)
-    print(f"The best model is written to {export_path}")
 
 
 def create_pipeline(clf_name, estimator, normalize=False, reduction=False):
@@ -105,6 +106,7 @@ def create_pipeline(clf_name, estimator, normalize=False, reduction=False):
 
 
 def run():
+    model_export_path = MODEL_EXPORT_PATH / "small"
     classifiers = [
         ("clf_svc", LinearSVC),
         ("clf_nb", MultinomialNB),
@@ -127,7 +129,7 @@ def run():
         small_dataset
     )
 
-    for (name, clf), params in zip(classifiers, parameters):
+    for (name, clf), params in list(zip(classifiers, parameters))[2:3]:
         pipeline = create_pipeline(name, clf())
         model, report_, cm = train_sklearn_classification_model(
             docs_train,
@@ -139,6 +141,10 @@ def run():
             params,
             cv=2,
         )
+        export(
+            model, model_export_path
+        )  # TODO: We need to find best model rather overwriting them.
+        print(f"The best model is written to {model_export_path}")
         report(report_, cm, MODEL_EXPORT_PATH)
 
 
