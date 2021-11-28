@@ -24,7 +24,8 @@ async def index():
 
 app.include_router(
     prediction.router,
-    prefix=settings.API_BASE_URL + "/Predictions",  # http://.../api/v1/Predictions/
+    prefix=settings.API_BASE_URL
+    + "/Predictions",  # http://.../api/v1/Predictions/
     tags=["Predictions Router"],
 )
 

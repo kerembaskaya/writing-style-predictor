@@ -1,16 +1,13 @@
-from abc import ABC
-from abc import abstractmethod
-from os import mkdir
-from os import path
+from abc import ABC, abstractmethod
+from os import mkdir, path
 
 import requests
 from bs4 import BeautifulSoup
 from urlpath import URL
 
-from style.constants import FILE_PATH_BOOK_DS
-from style.constants import GUTENBERG_BASE_URL
-from utils.author_catalog import create_catalog
-from utils.utils import sanitize_author_name
+from style.constants import FILE_PATH_BOOK_DS, GUTENBERG_BASE_URL
+from style.utils.author_catalog import create_catalog
+from style.utils.utils import sanitize_author_name
 
 
 class DataWrangler:
@@ -78,7 +75,9 @@ class GutenbergWrangler(DataWrangler, ABC):
                     response = self.session.get(book_url)
                     return response.text
         else:
-            raise NotImplementedError(f"Not Implemented for {response.status_code}")
+            raise NotImplementedError(
+                f"Not Implemented for {response.status_code}"
+            )
 
     @staticmethod
     def _save_books_to_disk(book_text, author_name, book_id) -> None:

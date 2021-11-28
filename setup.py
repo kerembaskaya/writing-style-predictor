@@ -1,8 +1,7 @@
 import sys
 from pathlib import Path
 
-from setuptools import find_packages
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def err(msg):
@@ -35,13 +34,17 @@ print(reqs)
 setup(
     name="PROJECTNAME",
     version="VERSION",
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
+    ),
     package_dir={"": "."},
     install_requires=reqs["core"],
     package_data={"": ["*.yaml"]},
     include_package_data=True,
     extras_require={
-        extra: extra_reqs for extra, extra_reqs in reqs.items() if extra != "core"
+        extra: extra_reqs
+        for extra, extra_reqs in reqs.items()
+        if extra != "core"
     },
     python_requires=">=3.8",
 )

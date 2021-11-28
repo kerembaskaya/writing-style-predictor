@@ -1,6 +1,8 @@
 from style.constants import MODEL_EXPORT_PATH
-from style.predict.servable.base import MockServable
-from style.predict.servable.base import SklearnBasedClassifierServable
+from style.predict.servable.base import (
+    MockServable,
+    SklearnBasedClassifierServable,
+)
 
 SERVABLE_REGISTRY = {}
 

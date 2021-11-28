@@ -1,12 +1,8 @@
 import json
-from os import mkdir
-from os import path
-from typing import List
-from typing import Set
+from os import mkdir, path
+from typing import List, Set
 
-from style.constants import WORLD_LANG_FILENAME
-from style.constants import WORLD_LANG_PATH
-
+from style.constants import WORLD_LANG_FILENAME, WORLD_LANG_PATH
 
 LANG_RAW: str = (
     "Romani Romanian Russian Rwanda Samoan Sanskrit Serbian Shona Sindhi Sinhala Slovak Slovene Somali "

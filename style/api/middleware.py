@@ -1,8 +1,7 @@
 import logging
 import time
 
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import FastAPI, Request
 
 logger = logging.getLogger(__name__)
 
