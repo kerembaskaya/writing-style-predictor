@@ -1,7 +1,5 @@
 import sys
-from os.path import abspath
-from os.path import dirname
-from os.path import join
+from os.path import abspath, dirname
 
 try:
     import style

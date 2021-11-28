@@ -1,10 +1,7 @@
 import pytest
 
-from style.constants import CATALOG_FILE_PATH
 from style.constants import SELECTED_AUTHORS
-from utils.author_catalog import Book
-from utils.author_catalog import create_catalog
-from utils.author_catalog import is_selected_author
+from style.utils.author_catalog import Book, create_catalog, is_selected_author
 
 
 @pytest.mark.parametrize(

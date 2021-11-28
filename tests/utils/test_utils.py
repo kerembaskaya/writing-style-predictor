@@ -1,4 +1,4 @@
-from utils.utils import sanitize_author_name
+from style.utils.utils import sanitize_author_name
 
 
 def test_sanitize_author_name():

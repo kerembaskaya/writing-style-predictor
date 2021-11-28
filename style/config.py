@@ -1,6 +1,4 @@
-from pydantic import BaseSettings
-from pydantic import constr
-
+from pydantic import BaseSettings, constr
 
 Environment = constr(regex="^(local|dev|stage|prod)$")
 

@@ -3,9 +3,7 @@ import csv
 from dataclasses import dataclass
 from typing import Dict
 
-from style.constants import CATALOG_FILE_PATH
-from style.constants import LOG_FILE_PATH
-from style.constants import SELECTED_AUTHORS
+from style.constants import CATALOG_FILE_PATH, LOG_FILE_PATH, SELECTED_AUTHORS
 
 
 def read_csv(filepath=CATALOG_FILE_PATH):

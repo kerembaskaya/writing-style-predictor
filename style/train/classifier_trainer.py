@@ -1,22 +1,17 @@
-from os import mkdir
-from os import path
+from os import mkdir, path
 from pathlib import PosixPath
 
 from sklearn import metrics
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import SGDClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-from style.constants import FILE_PATH_BOOK_DS
-from style.constants import MODEL_EXPORT_PATH
-from style.dataset.reader import Dataset
-from style.dataset.reader import DatasetReader
+from style.constants import FILE_PATH_BOOK_DS, MODEL_EXPORT_PATH
+from style.dataset.reader import Dataset, DatasetReader
 from style.predict.servable.base import SklearnBasedClassifierServable
 
 
@@ -77,7 +72,9 @@ def report(report_, confusion_matrix, export_path: PosixPath):
         print(f"The report is saved successfully, under {export_path}")
     with open(export_path / "cm.txt", "a") as f:
         f.write(f"{str(confusion_matrix)}\n")
-        print(f"The confusion matrix is saved successfully, under {export_path}")
+        print(
+            f"The confusion matrix is saved successfully, under {export_path}"
+        )
 
 
 def export(model, export_path):

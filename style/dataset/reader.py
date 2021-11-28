@@ -26,7 +26,9 @@ class DatasetReader:
 
         """
         # authors' names are label at the same time folder names
-        filenames = sorted(glob.glob(f"{container_path}/*/*.txt", recursive=True))
+        filenames = sorted(
+            glob.glob(f"{container_path}/*/*.txt", recursive=True)
+        )
         data = []
         target = []
         for filename in filenames:
